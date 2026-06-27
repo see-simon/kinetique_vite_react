@@ -1,42 +1,44 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { supabase } from '../supabaseClient'
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
 const Navbar = () => {
-  const navigate = useNavigate()
-  const [user, setUser] = useState<any>(null)
-  const [role, setRole] = useState('')
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     // Get current user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
-    })
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProfile(session.user.id);
+    });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) fetchProfile(session.user.id)
-      else setRole('')
-    })
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) fetchProfile(session.user.id);
+      else setRole("");
+    });
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => subscription.unsubscribe();
+  }, []);
 
   const fetchProfile = async (userId: string) => {
     const { data } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single()
-    if (data) setRole(data.role)
-  }
+      .from("profiles")
+      .select("role")
+      .eq("id", userId)
+      .single();
+    if (data) setRole(data.role);
+  };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    navigate('/login')
-  }
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
 
   return (
     <nav className="navbar">
@@ -48,13 +50,12 @@ const Navbar = () => {
         <Link to="/">Home</Link>
         <Link to="/marketplace">Marketplace</Link>
 
-        {user && role === 'creator' && (
+        {user && role === "creator" && (
           <Link to="/creator">Creator Dashboard</Link>
         )}
 
-        {user && role === 'admin' && (
-          <Link to="/admin">Admin Panel</Link>
-        )}
+        {user && role === "admin" && <Link to="/admin">Admin Panel</Link>}
+        {user && <Link to="/orders">My Orders</Link>}
       </div>
 
       <div className="navbar-auth">
@@ -64,13 +65,17 @@ const Navbar = () => {
           </button>
         ) : (
           <>
-            <Link to="/login" className="btn-nav-login">Login</Link>
-            <Link to="/register" className="btn-nav-register">Register</Link>
+            <Link to="/login" className="btn-nav-login">
+              Login
+            </Link>
+            <Link to="/register" className="btn-nav-register">
+              Register
+            </Link>
           </>
         )}
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

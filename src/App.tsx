@@ -9,6 +9,7 @@ import Marketplace from './pages/Marketplace'
 import ProductDetail from './pages/ProductDetail'
 import Register from './pages/Register'
 import CreatorDashboard from './pages/CreatorDashboard'
+import Orders from './pages/Orders'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/orders" element={<Orders />} />
       </Routes>
     </Router>
   )
