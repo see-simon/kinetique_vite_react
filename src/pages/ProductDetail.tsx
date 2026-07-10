@@ -19,7 +19,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  //const [orderSuccess, setOrderSuccess] = useState(false);
+  //const [orderSuccess, setOrderSuccess] = useState(false);   /////  uncomment this later
   const [isOrdering, setIsOrdering] = useState(false);
 
   useEffect(() => {
