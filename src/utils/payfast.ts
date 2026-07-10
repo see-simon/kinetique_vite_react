@@ -11,13 +11,12 @@ export const initiatePayFastPayment = (payment: PayFastPayment) => {
   const merchantKey = import.meta.env.VITE_PAYFAST_MERCHANT_KEY
   const payFastUrl = import.meta.env.VITE_PAYFAST_URL
 
-  // Create form data
   const formData = {
     merchant_id: merchantId,
     merchant_key: merchantKey,
-    return_url: `${window.location.origin}/orders`,
+    return_url: `${window.location.origin}/orders?payment=success&order_id=${payment.orderId}`,
     cancel_url: `${window.location.origin}/marketplace`,
-    notify_url: `${window.location.origin}/orders`,
+    notify_url: `https://kinetique-vite-net-core.onrender.com/api/PayFast/notify`,
     name_first: payment.customerName.split(' ')[0],
     name_last: payment.customerName.split(' ')[1] || '',
     email_address: payment.customerEmail,
@@ -26,7 +25,6 @@ export const initiatePayFastPayment = (payment: PayFastPayment) => {
     item_name: payment.itemName,
   }
 
-  // Create and submit form
   const form = document.createElement('form')
   form.method = 'POST'
   form.action = payFastUrl

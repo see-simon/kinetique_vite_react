@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 interface Order {
   id: number
@@ -21,11 +21,20 @@ interface Order {
 
 const Orders = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
 
   useEffect(() => {
     checkUser()
+    // Check if returning from PayFast
+    const params = new URLSearchParams(location.search)
+    if (params.get('payment') === 'success') {
+      setPaymentSuccess(true)
+      setTimeout(() => setPaymentSuccess(false), 5000)
+      window.history.replaceState({}, '', '/orders')
+    }
   }, [])
 
   const checkUser = async () => {
@@ -71,6 +80,13 @@ const Orders = () => {
 
   return (
     <div className="dashboard">
+
+      {/* PAYMENT SUCCESS TOAST */}
+      {paymentSuccess && (
+        <div className="success-toast">
+          🎉 Payment successful! Your order has been placed and is being processed.
+        </div>
+      )}
 
       <div className="dashboard-header">
         <div>

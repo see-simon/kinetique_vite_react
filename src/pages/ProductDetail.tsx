@@ -19,7 +19,6 @@ const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  //const [orderSuccess, setOrderSuccess] = useState(false);   /////  uncomment this later
   const [isOrdering, setIsOrdering] = useState(false);
 
   useEffect(() => {
@@ -101,12 +100,6 @@ const ProductDetail = () => {
 
   return (
     <div className="product-detail">
-      {/* {orderSuccess && (
-        <div className="success-toast">
-          ✅ Order placed successfully! A confirmation will be sent to you
-          shortly.
-        </div> 
-      )}*/}
 
       <button className="back-btn" onClick={() => navigate("/marketplace")}>
         ← Back to Marketplace
