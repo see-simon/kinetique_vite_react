@@ -21,6 +21,8 @@ const ProductDetail = () => {
   const [user, setUser] = useState<any>(null);
   const [isOrdering, setIsOrdering] = useState(false);
 
+  const [quantity, setQuantity] = useState(1);
+
   useEffect(() => {
     fetchProduct();
     checkUser();
@@ -52,13 +54,14 @@ const ProductDetail = () => {
 
     setIsOrdering(true);
 
-    // Create order in database first
+    const totalAmount = product!.price * quantity;
+
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .insert([
         {
           customer_id: user.id,
-          total_amount: product!.price,
+          total_amount: totalAmount,
           status: "pending",
         },
       ])
@@ -70,22 +73,20 @@ const ProductDetail = () => {
         {
           order_id: order.id,
           product_id: product!.id,
-          quantity: 1,
+          quantity: quantity,
           price: product!.price,
         },
       ]);
 
-      // Get user profile for name
       const { data: profile } = await supabase
         .from("profiles")
         .select("full_name")
         .eq("id", user.id)
         .single();
 
-      // Initiate PayFast payment
       initiatePayFastPayment({
-        amount: product!.price,
-        itemName: product!.title,
+        amount: totalAmount,
+        itemName: `${product!.title} x${quantity}`,
         orderId: order.id,
         customerEmail: user.email,
         customerName: profile?.full_name || "Customer",
@@ -94,13 +95,11 @@ const ProductDetail = () => {
 
     setIsOrdering(false);
   };
-
   if (isLoading) return <div className="loading">Loading product...</div>;
   if (!product) return <div className="loading">Product not found.</div>;
 
   return (
     <div className="product-detail">
-
       <button className="back-btn" onClick={() => navigate("/marketplace")}>
         ← Back to Marketplace
       </button>
@@ -127,6 +126,29 @@ const ProductDetail = () => {
             <div className="feature-item">✅ Quality guaranteed</div>
             <div className="feature-item">✅ South African made</div>
             <div className="feature-item">✅ Fast delivery</div>
+          </div>
+
+          {/* QUANTITY SELECTOR */}
+          <div className="quantity-selector">
+            <label>Quantity:</label>
+            <div className="quantity-controls">
+              <button
+                className="qty-btn"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              >
+                −
+              </button>
+              <span className="qty-value">{quantity}</span>
+              <button
+                className="qty-btn"
+                onClick={() => setQuantity((q) => q + 1)}
+              >
+                +
+              </button>
+            </div>
+            <span className="qty-total">
+              Total: R{(product.price * quantity).toFixed(2)}
+            </span>
           </div>
 
           <button
