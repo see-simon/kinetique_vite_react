@@ -10,6 +10,7 @@ import ProductDetail from './pages/ProductDetail'
 import Register from './pages/Register'
 import CreatorDashboard from './pages/CreatorDashboard'
 import Orders from './pages/Orders'
+import Footer from './pages/Footer'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/footer" element={<Footer />} />
       </Routes>
     </Router>
   )
