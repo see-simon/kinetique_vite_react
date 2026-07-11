@@ -13,11 +13,13 @@ body {
 /* NAVBAR */
 .navbar {
   background: #0a0a2e;
-  padding: 16px 40px;
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  position: relative;
+  z-index: 100;
 }
 
 .navbar-brand a {
@@ -27,9 +29,38 @@ body {
   font-weight: 700;
 }
 
+/* HAMBURGER */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  z-index: 101;
+}
+
+.hamburger-line {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #00d4ff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+/* NAVBAR MENU */
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
 .navbar-links {
   display: flex;
-  gap: 24px;
+  gap: 20px;
+  align-items: center;
 }
 
 .navbar-links a {
@@ -38,6 +69,7 @@ body {
   font-size: 14px;
   font-weight: 500;
   transition: 0.3s;
+  white-space: nowrap;
 }
 
 .navbar-links a:hover {
@@ -72,6 +104,7 @@ body {
   border-radius: 8px;
   font-weight: 600;
   transition: 0.3s;
+  white-space: nowrap;
 }
 
 .btn-logout {
@@ -83,10 +116,65 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: 0.3s;
+  white-space: nowrap;
 }
 
 .btn-logout:hover {
   background: rgba(255, 50, 50, 0.1);
+}
+
+/* MOBILE NAVBAR */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .navbar-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #0a0a2e;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px 24px;
+    gap: 16px;
+    border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .navbar-menu.open {
+    display: flex;
+  }
+
+  .navbar-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .navbar-links a {
+    font-size: 16px;
+    width: 100%;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .navbar-auth {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .btn-nav-login,
+  .btn-nav-register,
+  .btn-logout {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* AUTH */

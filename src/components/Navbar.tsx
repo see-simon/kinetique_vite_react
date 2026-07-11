@@ -6,18 +6,15 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Get current user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
     });
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) fetchProfile(session.user.id);
       else setRole("");
@@ -37,42 +34,62 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setMenuOpen(false);
     navigate("/login");
   };
 
+  const closeMenu = () => setMenuOpen(false);
+
   return (
     <nav className="navbar">
+      {/* BRAND */}
       <div className="navbar-brand">
-        <Link to="/">👕 Kinetique</Link>
+        <Link to="/" onClick={closeMenu}>👕 Kinetique</Link>
       </div>
 
-      <div className="navbar-links">
-        <Link to="/">Home</Link>
-        <Link to="/marketplace">Marketplace</Link>
+      {/* HAMBURGER BUTTON */}
+      <button
+        className="hamburger"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle menu"
+      >
+        <span className={`hamburger-line ${menuOpen ? 'open' : ''}`} />
+        <span className={`hamburger-line ${menuOpen ? 'open' : ''}`} />
+        <span className={`hamburger-line ${menuOpen ? 'open' : ''}`} />
+      </button>
 
-        {user && role === "creator" && (
-          <Link to="/creator">Creator Dashboard</Link>
-        )}
+      {/* NAV MENU */}
+      <div className={`navbar-menu ${menuOpen ? 'open' : ''}`}>
+        <div className="navbar-links">
+          <Link to="/" onClick={closeMenu}>Home</Link>
+          <Link to="/marketplace" onClick={closeMenu}>Marketplace</Link>
+          {user && role === "creator" && (
+            <Link to="/creator" onClick={closeMenu}>Creator Dashboard</Link>
+          )}
+          {user && role === "admin" && (
+            <Link to="/admin" onClick={closeMenu}>Admin Panel</Link>
+          )}
+          {user && (
+            <Link to="/orders" onClick={closeMenu}>My Orders</Link>
+          )}
+        </div>
 
-        {user && role === "admin" && <Link to="/admin">Admin Panel</Link>}
-        {user && <Link to="/orders">My Orders</Link>}
-      </div>
-
-      <div className="navbar-auth">
-        {user ? (
-          <button onClick={handleLogout} className="btn-logout">
-            Logout
-          </button>
-        ) : (
-          <>
-            <Link to="/login" className="btn-nav-login">
-              Login
-            </Link>
-            <Link to="/register" className="btn-nav-register">
-              Register
-            </Link>
-          </>
-        )}
+        <div className="navbar-auth">
+          {user ? (
+            <button onClick={handleLogout} className="btn-logout">
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link to="/login" className="btn-nav-login" onClick={closeMenu}>
+                Login
+              </Link>
+              <Link to="/register" className="btn-nav-register" onClick={closeMenu}>
+                Register
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );
