@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { initiatePayFastPayment } from "../utils/payfast";
+import { useCart } from "../context/CartContext";
 
 interface Product {
   id: number;
@@ -20,8 +21,9 @@ const ProductDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [isOrdering, setIsOrdering] = useState(false);
-
   const [quantity, setQuantity] = useState(1);
+  const { addToCart } = useCart();
+  const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
     fetchProduct();
@@ -44,6 +46,20 @@ const ProductDetail = () => {
       data: { session },
     } = await supabase.auth.getSession();
     setUser(session?.user ?? null);
+  };
+
+  const handleAddToCart = () => {
+    if (!product) return;
+    addToCart({
+      id: product.id,
+      title: product.title,
+      price: product.price,
+      image_url: product.image_url,
+      category: product.category,
+      quantity: quantity,
+    });
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
 
   const handleOrder = async () => {
@@ -151,17 +167,27 @@ const ProductDetail = () => {
             </span>
           </div>
 
-          <button
-            className="btn-order"
-            onClick={handleOrder}
-            disabled={isOrdering}
-          >
-            {isOrdering
-              ? "Processing..."
-              : user
-                ? "💳 Pay Now"
-                : "Login to Order"}
-          </button>
+          <div className="product-buttons">
+            <button
+              className="btn-add-to-cart"
+              onClick={handleAddToCart}
+              disabled={!user}
+            >
+              {addedToCart ? "✅ Added to Cart!" : "🛒 Add to Cart"}
+            </button>
+
+            <button
+              className="btn-order"
+              onClick={handleOrder}
+              disabled={isOrdering}
+            >
+              {isOrdering
+                ? "Processing..."
+                : user
+                  ? "💳 Buy Now"
+                  : "Login to Order"}
+            </button>
+          </div>
 
           {!user && (
             <p className="login-hint">

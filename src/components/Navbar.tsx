@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { useCart } from "../context/CartContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [role, setRole] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const { totalItems } = useCart();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -47,7 +49,7 @@ const Navbar = () => {
         <Link to="/" onClick={closeMenu}>👕 Kinetique</Link>
       </div>
 
-      {/* HAMBURGER BUTTON */}
+      {/* HAMBURGER */}
       <button
         className="hamburger"
         onClick={() => setMenuOpen(!menuOpen)}
@@ -75,6 +77,14 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-auth">
+          {/* CART ICON */}
+          <Link to="/cart" className="cart-icon" onClick={closeMenu}>
+            🛒
+            {totalItems > 0 && (
+              <span className="cart-badge">{totalItems}</span>
+            )}
+          </Link>
+
           {user ? (
             <button onClick={handleLogout} className="btn-logout">
               Logout
