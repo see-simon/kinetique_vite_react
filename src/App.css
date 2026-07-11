@@ -1701,3 +1701,87 @@ body {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* PROFILE */
+.profile-container {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 32px;
+  max-width: 900px;
+}
+
+.profile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(145deg, #1e2a4a, #162040);
+  border-radius: 16px;
+  padding: 32px 24px;
+  border: 1px solid rgba(0, 212, 255, 0.1);
+  height: fit-content;
+}
+
+.avatar-wrapper {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(0, 212, 255, 0.3);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  background: rgba(0, 212, 255, 0.1);
+  color: white;
+  font-weight: 700;
+}
+
+.avatar-upload-btn {
+  background: rgba(0, 212, 255, 0.1);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: #00d4ff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.3s;
+}
+
+.avatar-upload-btn:hover {
+  background: rgba(0, 212, 255, 0.2);
+}
+
+.profile-role-badge {
+  margin-top: 8px;
+}
+
+.profile-details {
+  background: linear-gradient(145deg, #1e2a4a, #162040);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid rgba(0, 212, 255, 0.1);
+}
+
+.profile-details h2 {
+  color: #00d4ff;
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+  }
+}
