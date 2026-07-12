@@ -27,6 +27,15 @@ const CreatorDashboard = () => {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
 
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    title: "",
+    description: "",
+    price: "",
+    category: "T-Shirts",
+  });
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -57,6 +66,51 @@ const CreatorDashboard = () => {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
     }
+  };
+
+  const handleEditClick = (product: Product) => {
+    setEditingProduct(product);
+    setEditFormData({
+      title: product.title,
+      description: product.description,
+      price: product.price.toString(),
+      category: product.category,
+    });
+    setShowEditForm(true);
+  };
+
+  const handleEditInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProduct) return;
+    setIsSubmitting(true);
+
+    const { error } = await supabase
+      .from("products")
+      .update({
+        title: editFormData.title,
+        description: editFormData.description,
+        price: parseFloat(editFormData.price),
+        category: editFormData.category,
+      })
+      .eq("id", editingProduct.id);
+
+    if (!error) {
+      setSuccessMessage("✅ Product updated successfully!");
+      setShowEditForm(false);
+      setEditingProduct(null);
+      fetchProducts(user.id);
+      setTimeout(() => setSuccessMessage(""), 4000);
+    }
+
+    setIsSubmitting(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -336,6 +390,12 @@ const CreatorDashboard = () => {
                           : "Activate"}
                       </button>
                       <button
+                        className="btn-edit"
+                        onClick={() => handleEditClick(product)}
+                      >
+                        Edit
+                      </button>
+                      <button
                         className="delete-btn"
                         onClick={() => handleDelete(product.id)}
                       >
@@ -349,6 +409,74 @@ const CreatorDashboard = () => {
           </table>
         )}
       </div>
+      {/* EDIT FORM MODAL */}
+      {showEditForm && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h2>Edit Product</h2>
+            <p>Update your product details</p>
+
+            <form onSubmit={handleEditSubmit}>
+              <div className="form-group">
+                <label>Product Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  value={editFormData.title}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  name="description"
+                  value={editFormData.description}
+                  onChange={handleEditInputChange}
+                  rows={3}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Price (ZAR)</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={editFormData.price}
+                  onChange={handleEditInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Category</label>
+                <select
+                  name="category"
+                  value={editFormData.category}
+                  onChange={handleEditInputChange}
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" onClick={() => setShowEditForm(false)}>
+                  Cancel
+                </button>
+                <button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

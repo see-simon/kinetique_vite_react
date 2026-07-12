@@ -1850,3 +1850,19 @@ body {
     display: none;
   }
 }
+
+/* EDIT BUTTON */
+.btn-edit {
+  background: rgba(255, 165, 0, 0.1);
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  color: orange;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: 0.3s;
+}
+
+.btn-edit:hover {
+  background: rgba(255, 165, 0, 0.2);
+}
