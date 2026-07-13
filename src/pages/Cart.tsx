@@ -60,6 +60,22 @@ const Cart = () => {
       })
     }
 
+        // Send confirmation email via C# backend
+    try {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/orders/confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        customerEmail: session.user.email,
+        orderId: order.id,
+        productName: `Kinetique Order #${order.id} (${totalItems} items)`,
+        amount: totalPrice
+        })
+    })
+    } catch (err) {
+    console.log('Email notification failed:', err)
+    }
+
     setIsCheckingOut(false)
   }
 
