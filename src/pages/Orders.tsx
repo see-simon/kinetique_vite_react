@@ -26,16 +26,53 @@ const Orders = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
-  useEffect(() => {
-    checkUser()
-    // Check if returning from PayFast
-    const params = new URLSearchParams(location.search)
-    if (params.get('payment') === 'success') {
-      setPaymentSuccess(true)
-      setTimeout(() => setPaymentSuccess(false), 5000)
-      window.history.replaceState({}, '', '/orders')
+useEffect(() => {
+  checkUser()
+  const params = new URLSearchParams(location.search)
+  if (params.get('payment') === 'success') {
+    setPaymentSuccess(true)
+    setTimeout(() => setPaymentSuccess(false), 5000)
+    
+    // Send confirmation email when returning from PayFast
+    const orderId = params.get('order_id')
+    if (orderId) {
+      sendConfirmationEmail(parseInt(orderId))
     }
-  }, [])
+    
+    window.history.replaceState({}, '', '/orders')
+  }
+}, [])
+
+const sendConfirmationEmail = async (orderId: number) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
+
+    // Get order details
+    const { data: order } = await supabase
+      .from('orders')
+      .select('*, order_items(*, products(title))')
+      .eq('id', orderId)
+      .single()
+
+    if (!order) return
+
+    const productName = order.order_items?.[0]?.products?.title || 'Kinetique Order'
+
+    await fetch(`${import.meta.env.VITE_API_URL}/api/orders/confirm`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customerEmail: session.user.email,
+        orderId: order.id,
+        productName: productName,
+        amount: order.total_amount
+      })
+    })
+  } catch (err) {
+    console.log('Confirmation email failed:', err)
+  }
+}
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession()
